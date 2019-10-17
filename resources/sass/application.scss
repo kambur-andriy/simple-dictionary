@@ -1,0 +1,53 @@
+body {
+    padding: 5px;
+}
+
+@font-face {
+    font-family: 'Icons';
+    src: url("/fonts/icons.eot");
+    src: url("/fonts/icons.eot?#iefix") format('embedded-opentype'), url("/fonts/icons.woff2") format('woff2'), url("/fonts/icons.woff") format('woff'), url("/fonts/icons.ttf") format('truetype'), url("/fonts/icons.svg#icons") format('svg');
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-decoration: inherit;
+    text-transform: none;
+}
+
+#main-menu {
+    position: fixed;
+    bottom: 0;
+    right: 1rem;
+
+    border-radius: 2rem;
+    .item {
+        color: #21ba45 !important;
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+#training_card {
+    margin-top: 50vh;
+    transform: translateY(-50%);
+
+    #word, #translation {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 48px;
+    }
+
+    #translation {
+        font-size: 24px;
+        opacity: 0.4;
+    }
+
+    #example {
+        text-transform: lowercase;
+        font-weight: normal;
+        font-size: 24px;
+    }
+}
+
+
