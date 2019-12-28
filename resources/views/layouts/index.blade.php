@@ -8,7 +8,7 @@
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    
+
     <link rel="stylesheet" type="text/css" href="/css/semantic.min.css">
     <link rel="stylesheet" href="{{ mix('/css/application.css') }}">
 
@@ -26,7 +26,7 @@
         <i class="home icon"></i>
         Practice
     </a>
-    <a class="item" href="/edit">
+    <a class="item" href="/search">
         <i class="edit icon"></i>
         Edit
     </a>

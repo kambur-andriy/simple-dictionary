@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -2095,10 +2095,10 @@ window.showError = function (responseError) {
 
 /***/ }),
 
-/***/ "./resources/js/edit.js":
-/*!******************************!*\
-  !*** ./resources/js/edit.js ***!
-  \******************************/
+/***/ "./resources/js/create.js":
+/*!********************************!*\
+  !*** ./resources/js/create.js ***!
+  \********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2209,14 +2209,14 @@ $(document).ready(function () {
 
 /***/ }),
 
-/***/ 2:
-/*!************************************!*\
-  !*** multi ./resources/js/edit.js ***!
-  \************************************/
+/***/ 3:
+/*!**************************************!*\
+  !*** multi ./resources/js/create.js ***!
+  \**************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/andriy/Git/simple-dictionary/resources/js/edit.js */"./resources/js/edit.js");
+module.exports = __webpack_require__(/*! /home/andriy/Git/simple-dictionary/resources/js/create.js */"./resources/js/create.js");
 
 
 /***/ })

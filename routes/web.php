@@ -4,15 +4,16 @@ Route::get('/', function () {
     return view('practice');
 });
 
-Route::get('/edit', function () {
-    return view('edit');
+Route::get('/search', function () {
+    return view('search');
 });
 
 
-Route::get('/find-word', 'IndexController@findWord');
-Route::get('/get-random-word', 'IndexController@getRandomWord');
-Route::get('/get-words', 'IndexController@getWords');
+Route::get('/words/search', 'IndexController@searchWords');
+Route::get('/word/find', 'IndexController@findWord');
+Route::get('/word/random', 'IndexController@getRandomWord');
 
-Route::post('/add-word', 'IndexController@addWord');
-Route::post('/add-translation', 'IndexController@addTranslation');
-Route::post('/remove-translation', 'IndexController@removeTranslation');
+Route::post('/word/add', 'IndexController@addWord');
+Route::post('/word/edit', 'IndexController@editWord');
+Route::post('/translation/add', 'IndexController@addTranslation');
+Route::post('/translation/remove', 'IndexController@removeTranslation');

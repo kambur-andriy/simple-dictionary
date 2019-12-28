@@ -5,9 +5,48 @@ namespace App\Http\Controllers;
 use App\Models\Translation;
 use App\Models\Word;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class IndexController extends Controller
 {
+    /**
+     * Search words
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function searchWords(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'textPattern' => 'bail|string|nullable',
+                'page' => 'bail|required|integer'
+            ]
+        );
+
+        $textPattern = $request->input('textPattern');
+
+        $search = Word::when(
+            $textPattern,
+            function ($query, $textPattern) {
+                return $query->where('text', 'like', "%{$textPattern}%");
+            }
+        )->orderBy('id', 'desc')->paginate(10);
+
+        return response()->json(
+            [
+                'wordsList' => $search->items(),
+                'pagination' => [
+                    'currentPage' => $search->currentPage(),
+                    'lastPage' => $search->lastPage()
+                ]
+            ]
+        );
+    }
+
     /**
      * Find word
      *
@@ -21,17 +60,13 @@ class IndexController extends Controller
         $this->validate(
             $request,
             [
-                'searchWord' => 'bail|required|string'
+                'wordId' => 'bail|required|integer',
             ]
         );
 
-        $word = Word::where('text', $request->searchWord)->with('translations')->first();
+        $word = Word::findOrFail($request->wordId);
 
-        return response()->json(
-            [
-                'word' => $word
-            ]
-        );
+        return response()->json($word->load('translations'));
     }
 
     /**
@@ -48,7 +83,9 @@ class IndexController extends Controller
             $request,
             [
                 'text' => 'bail|required|string',
-                'transcription' => 'bail|required|string'
+                'transcription' => 'bail|required|string',
+                'text' => 'bail|required|string',
+                'example' => 'bail|required|string',
             ]
         );
 
@@ -61,9 +98,44 @@ class IndexController extends Controller
             )
         );
 
-        return response()->json(
-            $word->load('translations')
+        $word->translations()->create(
+            $request->only(
+                [
+                    'text',
+                    'example'
+                ]
+            )
         );
+
+        return response()->json($word);
+    }
+
+    /**
+     * Edit word
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function editWord(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'wordId' => 'bail|required|integer',
+                'text' => 'bail|required|string',
+                'transcription' => 'bail|required|string',
+            ]
+        );
+
+        $word = Word::findOrFail($request->wordId);
+
+        $word->text = $request->text;
+        $word->transcription = $request->transcription;
+        $word->save();
+
+        return response()->json($word->load('translations'));
     }
 
     /**
@@ -160,21 +232,6 @@ class IndexController extends Controller
                 'transcription' => $translation->word->transcription,
                 'translation' => $translation->text,
                 'example' => $translation->example
-            ]
-        );
-    }
-
-    /**
-     * Words list
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getWords()
-    {
-
-        return response()->json(
-            [
-                'words' => Word::all()
             ]
         );
     }

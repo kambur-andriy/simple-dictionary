@@ -2,7 +2,7 @@ require('./bootstrap');
 
 const getRandomWord = () => {
     axios.get(
-        '/get-random-word'
+        '/word/random'
     )
         .then(
             response => {

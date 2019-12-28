@@ -24,6 +24,11 @@ body {
     }
 }
 
+.ui.pagination.menu .active.item {
+    color: #fff;
+    background-color: #21ba45;
+}
+
 .hidden {
     display: none !important;
 }
