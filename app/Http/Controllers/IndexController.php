@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Translation;
 use App\Models\Word;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class IndexController extends Controller
 {
@@ -14,8 +15,9 @@ class IndexController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     *
+     * @throws ValidationException
      */
     public function searchWords(Request $request)
     {
@@ -52,8 +54,9 @@ class IndexController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     *
+     * @throws ValidationException
      */
     public function findWord(Request $request)
     {
@@ -74,8 +77,9 @@ class IndexController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     *
+     * @throws ValidationException
      */
     public function addWord(Request $request)
     {
@@ -84,7 +88,7 @@ class IndexController extends Controller
             [
                 'text' => 'bail|required|string',
                 'transcription' => 'bail|required|string',
-                'text' => 'bail|required|string',
+                'translation' => 'bail|required|string',
                 'example' => 'bail|required|string',
             ]
         );
@@ -99,12 +103,10 @@ class IndexController extends Controller
         );
 
         $word->translations()->create(
-            $request->only(
-                [
-                    'text',
-                    'example'
-                ]
-            )
+            [
+                'text' => $request->translation,
+                'example' => $request->example
+            ]
         );
 
         return response()->json($word);
@@ -115,8 +117,9 @@ class IndexController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     *
+     * @throws ValidationException
      */
     public function editWord(Request $request)
     {
@@ -143,8 +146,9 @@ class IndexController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     *
+     * @throws ValidationException
      */
     public function addTranslation(Request $request)
     {
@@ -182,8 +186,9 @@ class IndexController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     *
+     * @throws ValidationException
      */
     public function removeTranslation(Request $request)
     {
@@ -212,8 +217,9 @@ class IndexController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     *
+     * @throws ValidationException
      */
     public function getRandomWord(Request $request)
     {
