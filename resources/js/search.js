@@ -23,6 +23,11 @@ const searchWords = (textPattern = '', page = 1) => {
                         $('#words_list tbody')
                             .append(
                                 $('<tr />')
+                                    .attr(
+                                        {
+                                            id: word.id,
+                                        }
+                                    )
                                     .append(
                                         $('<td />')
                                             .html(word.text)
@@ -39,14 +44,30 @@ const searchWords = (textPattern = '', page = 1) => {
                                                 $('<a />')
                                                     .attr(
                                                         {
-                                                            id: word.id,
                                                             'href': '#'
                                                         }
                                                     )
                                                     .addClass('circular ui icon button green show-edit-word-frm')
                                                     .append(
                                                         $('<i />')
-                                                            .addClass('icon edit')
+                                                            .addClass('icon pencil')
+                                                    )
+                                            )
+                                    )
+                                    .append(
+                                        $('<td />')
+                                            .addClass('collapsing center aligned')
+                                            .append(
+                                                $('<a />')
+                                                    .attr(
+                                                        {
+                                                            'href': '#'
+                                                        }
+                                                    )
+                                                    .addClass('circular ui icon button green basic show-translations-frm')
+                                                    .append(
+                                                        $('<i />')
+                                                            .addClass('icon list')
                                                     )
                                             )
                                     )
@@ -70,27 +91,6 @@ const searchWords = (textPattern = '', page = 1) => {
 
                     $('#words_list .pagination').show();
                 }
-            }
-        )
-        .catch(
-            error => showError(error)
-        )
-};
-
-const findWord = wordId => {
-    axios.get(
-        '/word/find',
-        {
-            params: {
-                wordId
-            }
-        }
-    )
-        .then(
-            response => {
-                const word = response.data;
-
-                showWord(word);
             }
         )
         .catch(
@@ -125,7 +125,34 @@ const addWord = () => {
         )
 };
 
-const editWord = () => {
+const editWord = wordId => {
+    axios.get(
+        '/word/find',
+        {
+            params: {
+                wordId
+            }
+        }
+    )
+        .then(
+            response => showWord(response.data)
+        )
+        .catch(
+            error => showError(error)
+        )
+};
+
+const showWord = word => {
+    showEditWordForm();
+
+    const form = $('#edit_word_frm');
+
+    $('input[name="word_id"]', form).val(word.id);
+    $('input[name="transcription"]', form).val(word.transcription);
+    $('input[name="word"]', form).val(word.text).focus();
+};
+
+const saveWord = () => {
     const form = $('#edit_word_frm');
 
     const word = {
@@ -139,10 +166,8 @@ const editWord = () => {
         word
     )
         .then(
-            response => {
-                const word = response.data;
-
-                showWord(word);
+            () => {
+                showSearchForm();
 
                 searchWords();
             }
@@ -152,19 +177,42 @@ const editWord = () => {
         )
 };
 
-const showWord = word => {
-    const form = $('#edit_word_frm');
+// Translations
+const editTranslations = wordId => {
+    axios.get(
+        '/word/find',
+        {
+            params: {
+                wordId
+            }
+        }
+    )
+        .then(
+            response => {
+                let {id, text, translations} = response.data;
 
-    showEditWordForm();
+                showTranslations(id, text, translations);
+            }
+        )
+        .catch(
+            error => showError(error)
+        )
+};
 
-    $('input[name="word_id"]', form).val(word.id);
-    $('input[name="word"]', form).val(word.text);
-    $('input[name="transcription"]', form).val(word.transcription);
+const showTranslations = (wordId, originalWord, translations) => {
+    showTranslationsForm();
 
-    $('input[name="word"]', form).focus();
+    // Form
+    const form = $('#translations_frm');
 
-    const {translations} = word;
+    $('input[name="word_id"]', form).val(wordId);
+    $('input[name="translation"]', form).val('');
+    $('input[name="example"]', form).val('').focus();
 
+    // Original word
+    $('#original_word').text(originalWord);
+
+    // Table
     $('#translations tbody').empty();
 
     translations.map(
@@ -198,9 +246,8 @@ const showTranslation = translation => {
         )
 };
 
-// Translations
 const addTranslation = () => {
-    const form = $('#edit_word_frm');
+    const form = $('#translations_frm');
 
     const translation = {
         wordId: $('input[name="word_id"]', form).val(),
@@ -214,8 +261,8 @@ const addTranslation = () => {
     )
         .then(
             response => {
-                $('input[name="translation"]').val('').focus();
-                $('input[name="example"]').val('');
+                $('input[name="translation"]').val('');
+                $('input[name="example"]').val('').focus();
 
                 showTranslation(response.data)
             }
@@ -248,30 +295,52 @@ const removeTranslation = translationId => {
 const showNewWordForm = () => {
     $('#new_word_frm').removeClass('hidden');
     $('#new_word_frm input').val('');
+    $('#new_word_frm input:first').focus();
+
+    $('#words_list').addClass('hidden');
 
     $('#edit_word_frm').addClass('hidden');
     $('#search_frm').addClass('hidden');
+    $('#translations_frm').addClass('hidden');
 };
 
 const showEditWordForm = () => {
     $('#edit_word_frm').removeClass('hidden');
     $('#edit_word_frm input').val('');
 
+    $('#words_list').addClass('hidden');
+
     $('#new_word_frm').addClass('hidden');
     $('#search_frm').addClass('hidden');
+    $('#translations_frm').addClass('hidden');
+};
+
+const showTranslationsForm = () => {
+    $('#translations_frm').removeClass('hidden');
+    $('#translations_frm input').val('');
+
+    $('#words_list').addClass('hidden');
+
+    $('#new_word_frm').addClass('hidden');
+    $('#search_frm').addClass('hidden');
+    $('#edit_word_frm').addClass('hidden');
 };
 
 const showSearchForm = () => {
     $('#search_frm').removeClass('hidden');
     $('#search_frm input').val('');
 
+    $('#words_list').removeClass('hidden');
+
     $('#new_word_frm').addClass('hidden');
     $('#edit_word_frm').addClass('hidden');
+    $('#translations_frm').addClass('hidden');
 };
 
 // Document
 $(document).ready(function () {
 
+    // Search
     searchWords();
 
     $('input[name="text_pattern"]').on('dblclick', function (event) {
@@ -280,6 +349,14 @@ $(document).ready(function () {
         $(this).val('');
 
         searchWords();
+    });
+
+    $('input[name="text_pattern"]').on('keydown', function (event) {
+        if (event.keyCode == 27) {
+            $(this).val('');
+
+            searchWords();
+        }
     });
 
     $('#search_frm').on('submit', function (event) {
@@ -299,6 +376,7 @@ $(document).ready(function () {
         searchWords(textPattern, page);
     });
 
+    // New word
     $('#show_new_word_frm').on('click', function (event) {
         event.preventDefault();
 
@@ -317,27 +395,37 @@ $(document).ready(function () {
         addWord();
     });
 
-    $('#edit_word_frm').on('submit', function (event) {
-        event.preventDefault();
-
-        editWord();
-    });
-
+    // Edit word
     $('#words_list').on('click', '.show-edit-word-frm', function (event) {
         event.preventDefault();
 
-        const wordId = $(this).attr('id');
+        const wordId = $(this).parents('tr').attr('id');
 
-        findWord(wordId);
+        editWord(wordId);
     });
 
-    $('#save_translation').on('click', function (event) {
+    $('#edit_word_frm').on('submit', function (event) {
+        event.preventDefault();
+
+        saveWord();
+    });
+
+    // Edit translations
+    $('#words_list').on('click', '.show-translations-frm', function (event) {
+        event.preventDefault();
+
+        const wordId = $(this).parents('tr').attr('id');
+
+        editTranslations(wordId);
+    });
+
+    $('#translations_frm').on('submit', function (event) {
         event.preventDefault();
 
         addTranslation();
     });
 
-    $('#translations').on('click', '.remove-translation',function (event) {
+    $('#translations').on('click', '.remove-translation', function (event) {
         event.preventDefault();
 
         const translationId = $(this).parents('tr').attr('id');
